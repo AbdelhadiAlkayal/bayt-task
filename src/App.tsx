@@ -1,7 +1,7 @@
 import router from "./router/router";
-
-import { RouterProvider } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, Zoom } from "react-toastify";
+import { RouterProvider } from "react-router-dom";
 
 const App = () => {
   return (
@@ -9,7 +9,7 @@ const App = () => {
       <RouterProvider router={router} />
       <ToastContainer
         transition={Zoom}
-        position="top-center"
+        position="top-left"
         autoClose={2000}
         hideProgressBar={false}
         newestOnTop={true}

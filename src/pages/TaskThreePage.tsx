@@ -1,5 +1,7 @@
+import TaskThree from "../components/tasks/taskThree/TaskThree";
+
 const TaskThreePage = () => {
-  return <div>TaskThreePage</div>;
+  return <TaskThree />;
 };
 
 export default TaskThreePage;

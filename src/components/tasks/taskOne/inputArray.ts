@@ -39,7 +39,7 @@ export const inputArray: IInputArray[] = [
   },
   {
     type: "password",
-    label: "Re Password",
+    label: "Re-password",
     name: "confirmPassword",
     placeholder: "confirm password",
   },

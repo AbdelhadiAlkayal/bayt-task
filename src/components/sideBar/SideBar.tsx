@@ -4,6 +4,8 @@ import { ArrowRightIcon, ArrowLeftIcon } from "@iconicicons/react";
 import Logo from "../../assets/logo/bayt-logo.png";
 import { Button } from "@lemonsqueezy/wedges";
 import useBoolean from "../../hooks/useBoolean";
+import { useMediaQuery } from "@uidotdev/usehooks";
+import { useEffect } from "react";
 
 export interface ITabs {
   router: string;
@@ -26,7 +28,14 @@ const tabs: ITabs[] = [
 ];
 
 const SideBar = () => {
-  const { boolean, toggleHandler } = useBoolean();
+  const { boolean, toggleHandler, setBoolean } = useBoolean();
+  const isMediumDevice = useMediaQuery("only screen and  (max-width : 992px)");
+
+  useEffect(() => {
+    if (isMediumDevice) {
+      setBoolean(true);
+    }
+  }, [isMediumDevice]);
 
   return (
     <div className="relative px-[14px] bg-primary_active">
@@ -44,12 +53,14 @@ const SideBar = () => {
             } `}
           />
 
-          <Button
-            onClick={toggleHandler}
-            before={boolean ? <ArrowRightIcon /> : <ArrowLeftIcon />}
-            variant="primary"
-            className="absolute right-0 hover:bg-[#2783fcd8] p-[2px] "
-          />
+          {!isMediumDevice && (
+            <Button
+              onClick={toggleHandler}
+              before={boolean ? <ArrowRightIcon /> : <ArrowLeftIcon />}
+              variant="primary"
+              className="absolute right-0 hover:bg-[#2783fcd8] p-[2px] "
+            />
+          )}
         </div>
         <DashboardTabs TABS={tabs} isClose={boolean} />
       </div>

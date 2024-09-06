@@ -1,11 +1,23 @@
-import { useState, FormEvent, ChangeEvent } from "react";
+import { useState, FormEvent } from "react";
 import Card from "../../card/Card";
-import { Button, Checkbox, Input } from "@lemonsqueezy/wedges";
+import { Button, Input, Label } from "@lemonsqueezy/wedges";
 import { CheckIcon } from "@iconicicons/react";
 import { inputArray } from "./inputArray";
+import { toast } from "react-toastify";
+import { validateField } from "./validateField";
+
+export interface IField {
+  username: string;
+  email: string;
+  firstName: string;
+  website: string;
+  password: string;
+  confirmPassword: string;
+  agreePolicy: boolean;
+}
 
 const TaskOne = () => {
-  const [formData, setFormData] = useState<any>({
+  const [formData, setFormData] = useState<IField>({
     username: "",
     email: "",
     firstName: "",
@@ -25,66 +37,16 @@ const TaskOne = () => {
     agreePolicy: "",
   });
 
-  const validateField = (name: string, value: any) => {
-    let error = "";
+  const handleChange = (e: any) => {
+    const { name, value, checked, type } = e.target as HTMLInputElement;
+    const fieldValue = type === "checkbox" ? checked : value;
 
-    switch (name) {
-      case "username":
-        if (!value.trim()) {
-          error = "Username is required";
-        }
-        break;
-      case "email":
-        if (!value.includes("@")) {
-          error = "Enter a valid email";
-        }
-        break;
-      case "firstName":
-        if (!value.trim()) {
-          error = "First name is required";
-        }
-        break;
-      case "website":
-        if (!value.trim()) {
-          error = "Website is required";
-        }
-        break;
-      case "password":
-        if (value.length < 6) {
-          error = "Password must be at least 6 characters";
-        }
-        break;
-      case "confirmPassword":
-        if (value !== formData.password) {
-          error = "Passwords do not match";
-        }
-        break;
-      case "agreePolicy":
-        if (!value) {
-          error = "You must agree to the privacy policy";
-        }
-        break;
-      default:
-        break;
-    }
-
-    return error;
-  };
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement> | any) => {
-    debugger;
-    console.log(e.target.id);
-    const { name, value, checked, type, id } = e.target as HTMLInputElement;
-    const fieldValue = type || id === "checkbox" ? checked : value;
-
-    // Update form data
     setFormData({
       ...formData,
       [name]: fieldValue,
     });
 
-    // Clear or set the error for the specific field
-    const error = validateField(name, fieldValue);
+    const error = validateField(name, fieldValue, formData);
     setErrors({
       ...errors,
       [name]: error,
@@ -95,8 +57,8 @@ const TaskOne = () => {
     let formErrors = { ...errors };
     let isValid = true;
 
-    Object.keys(formData).forEach((key) => {
-      const error = validateField(key, formData[key]);
+    (Object.keys(formData) as (keyof IField)[]).forEach((key) => {
+      const error = validateField(key, formData[key], formData);
       if (error) {
         formErrors[key] = error;
         isValid = false;
@@ -113,39 +75,55 @@ const TaskOne = () => {
     e.preventDefault();
 
     if (validateForm()) {
-      // Form is valid, handle submission logic here
-      console.log("Form Submitted", formData);
+      toast.success("Your Form sublimation");
+
+      setFormData({
+        username: "",
+        email: "",
+        firstName: "",
+        website: "",
+        password: "",
+        confirmPassword: "",
+        agreePolicy: false,
+      });
     }
   };
 
   return (
     <div className="flex flex-col gap-4 items-center">
       <h3 className=" font-semibold">{`Form Validation`}</h3>
-      <Card>
+      <Card customClass="w-[400px]">
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          {inputArray.map((el, index) => (
+          {inputArray.map((el) => (
             <Input
+              onChange={handleChange}
               key={el.name}
               type={el.type}
               placeholder={el.placeholder}
               label={el.label}
               name={el.name}
-              // helperText={
-              //   <span className="text-red-500">{`${errors.el.name}`}</span>
-              // }
+              helperText={
+                <span className="!text-red-500">{`${errors[el.name]}`}</span>
+              }
             />
           ))}
-          <Checkbox
-            id="1"
-            description="I agree for privacy policy"
-            helperText={
-              <span className="text-red-500">{errors.agreePolicy}</span>
-            }
-            name="agreePolicy"
-            defaultChecked={formData.agreePolicy}
-            onClick={handleChange}
-            required
-          />
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="agreePolicy"
+                onClick={handleChange}
+                defaultChecked={formData.agreePolicy}
+              />
+              <Label required description="I agree for privacy policy" />
+            </div>
+            {errors.agreePolicy && (
+              <span className="!text-red-500 text-[14px]">
+                {errors.agreePolicy}
+              </span>
+            )}
+          </div>
+
           <Button
             className=" hover:bg-[#2783fcd8]"
             after={<CheckIcon />}
